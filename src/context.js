@@ -15,7 +15,7 @@ const AppProvider = ({children}) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [selectedMeal, setSelectedMeal] = useState(null);
-    const [favorites, setFavorites] = useState([]);
+    const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem("favorites")) || []);
 
     const searchMeals = allMealsUrl + searchTerm;
 
@@ -36,7 +36,12 @@ const AppProvider = ({children}) => {
     }
 
     const selectMeal = (idMeal, favoriteMeal) => {
-        const meal = meals.find((meal) => meal.idMeal === idMeal);
+        let meal
+        if(favoriteMeal) {
+            meal = favorites.find((item) => item.idMeal === idMeal);
+        } else {
+            meal = meals.find((meal) => meal.idMeal === idMeal);
+        }
         setSelectedMeal(meal);
         setShowModal(true);
     }
@@ -51,11 +56,13 @@ const AppProvider = ({children}) => {
         if(alreadyFavorite) return;
         const updateFavorites = [...favorites, meal];
         setFavorites(updateFavorites);
+        localStorage.setItem("favorites", JSON.stringify(updateFavorites));
     }
 
     const removeFavorites = (idMeal) => {
         const updateFavorites = favorites.filter((meal) => meal.idMeal !== idMeal);
         setFavorites(updateFavorites);
+        localStorage.setItem("favorites", JSON.stringify(updateFavorites));
     }
 
     useEffect(() => {
